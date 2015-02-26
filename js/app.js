@@ -34,8 +34,6 @@ Enemy.prototype.update = function (dt) {
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    ctx.fillStyle = "yellow";
-    ctx.fillRect(this.x + this.centerX, this.y + this.centerY, 2, 2);
 }
 
 // Now write your own player class
@@ -85,13 +83,6 @@ Player.prototype.checkCollisions = function () {
 Player.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     var self = this;
-    allEnemies.forEach(function(enemy){
-        ctx.beginPath();
-        ctx.strokeStyle = "#f00";
-        ctx.moveTo(self.x + self.centerX, self.y + self.centerY);
-        ctx.lineTo(enemy.x + enemy.centerX, enemy.y + enemy.centerY);
-        ctx.stroke();
-    });
 };
 
 Player.prototype.handleInput = function (movement) {
@@ -138,16 +129,4 @@ document.addEventListener('keyup', function (e) {
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
-});
-
-document.addEventListener("keydown", function (e) {
-    var allowedKeys = {
-        37: 'left',
-        38: 'up',
-        39: 'right',
-        40: 'down'
-    };
-    if (allowedKeys[e.keyCode]) {
-        e.preventDefault();
-    }
 });
