@@ -1,0 +1,55 @@
+{
+    "some_global_settings": {
+        "game_speed": 30
+    },
+    "level1": {
+        "map": [
+            "WWSWW",
+            "SSSSS",
+            "GGGGG",
+            "SSSSS",
+            "SSSSS",
+            "WWSWW"
+        ],
+        "key": {
+            "x": 424,
+            "y": 110
+        },
+        "gems": [
+            {
+                "x": 0,
+                "y": 362,
+                "sprite": "images/gem-blue.png",
+                "time": 5,
+                "value": 100
+            }
+        ],
+        "enemies": [
+            {
+                "x": 0,
+                "y": 133,
+                "velocity": 80
+            },{
+                "x": 0,
+                "y": 216,
+                "velocity": 55
+            },{
+                "x": 0,
+                "y": 299,
+                "velocity": 20
+            },{
+                "x": 0,
+                "y": 382,
+                "velocity": 150
+            }
+        ],
+        "player_position": {
+            "x": 202,
+            "y": 463
+        },
+        "end_position": {
+            "x": 0,
+            "y": 2
+        }
+    }
+}
