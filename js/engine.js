@@ -14,7 +14,7 @@
  * a little simpler to work with.
  */
 
-var Engine = (function(global) {
+var Engine = (function (global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
@@ -79,6 +79,7 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+
         updateEntities(dt);
         // checkCollisions();
     }
@@ -91,10 +92,11 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
+        /*allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        player.update();
+        player.update();*/
+        frogger.update(dt);
     }
 
     /* This function initially draws the "game level", it will then call
@@ -108,12 +110,12 @@ var Engine = (function(global) {
          * for that particular row of the game level.
          */
         var rowImages = [
-                'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
+                'images/water-block.png', // Top row is water
+                'images/stone-block.png', // Row 1 of 3 of stone
+                'images/stone-block.png', // Row 2 of 3 of stone
+                'images/stone-block.png', // Row 3 of 3 of stone
+                'images/grass-block.png', // Row 1 of 2 of grass
+                'images/grass-block.png' // Row 2 of 2 of grass
             ],
             numRows = 6,
             numCols = 5,
@@ -123,19 +125,19 @@ var Engine = (function(global) {
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
          */
-        for (row = 0; row < numRows; row++) {
-            for (col = 0; col < numCols; col++) {
-                /* The drawImage function of the canvas' context element
-                 * requires 3 parameters: the image to draw, the x coordinate
-                 * to start drawing and the y coordinate to start drawing.
-                 * We're using our Resources helpers to refer to our images
-                 * so that we get the benefits of caching these images, since
-                 * we're using them over and over.
-                 */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+        /*for (row = 0; row < numRows; row++) {
+            for (col = 0; col < numCols; col++) {*/
+        /* The drawImage function of the canvas' context element
+         * requires 3 parameters: the image to draw, the x coordinate
+         * to start drawing and the y coordinate to start drawing.
+         * We're using our Resources helpers to refer to our images
+         * so that we get the benefits of caching these images, since
+         * we're using them over and over.
+         */
+        /*ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
+*/
 
         renderEntities();
     }
@@ -148,11 +150,12 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+        /*map.render();
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
 
-        player.render();
+        player.render();*/
     }
 
     /* This function does nothing but it could have been a good place to
@@ -167,18 +170,31 @@ var Engine = (function(global) {
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
      */
-    Resources.load([
-        'images/stone-block.png',
-        'images/water-block.png',
-        'images/grass-block.png',
-        'images/enemy-bug.png',
-        'images/char-boy.png'
-    ]);
-    Resources.onReady(init);
+
 
     /* Assign the canvas' context object to the global variable (the window
      * object when run in a browser) so that developer's can use it more easily
      * from within their app.js files.
      */
+    Resources.load([
+        'images/stone-block.png',
+        'images/water-block.png',
+        'images/grass-block.png',
+        'images/enemy-bug.png',
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+        'images/key.png',
+        'images/gem-blue.png',
+        'images/gem-green.png',        
+        'images/gem-orange.png',
+        'images/heart.png',
+        'images/Selector.png',
+        'images/door.png'
+    ]);
+    Resources.onReady(init);
+
     global.ctx = ctx;
 })(this);
