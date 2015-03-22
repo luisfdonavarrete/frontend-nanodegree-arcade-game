@@ -2,7 +2,7 @@ var frogger;
 var player;
 var map;
 var allEnemies;
-var currentLevel = 10;
+var currentLevel = 1;
 var key;
 var gems;
 var score = [];
@@ -76,11 +76,11 @@ function TileMap(x, y, sprite) {
     this.sprite = sprite;
 }
 
-<<<<<<< HEAD
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-=======
+};
+
 TileMap.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x * this.width, this.y * this.height);
 };
@@ -101,7 +101,6 @@ StoneTile.prototype.constructor = StoneTile;
 
 function GrassTile(x, y, sprite) {
     TileMap.call(this, x, y, sprite);
->>>>>>> develop-new
 }
 
 GrassTile.prototype = Object.create(TileMap.prototype);
@@ -188,7 +187,7 @@ Key.prototype.render = function () {
     }
 };
 
-var Enemy = function (x, y, velocity) {
+function Enemy(x, y, velocity) {
     this.sprite = "images/enemy-bug.png";
     this.srcX = 0;
     this.srcY = 70;
@@ -417,7 +416,6 @@ function Frogger() {
 
 Frogger.prototype.update = function (dt) {
     this.finiteStateMachine.update(dt);
->>>>>>> develop-new
 };
 
 Frogger.prototype.handleInput = function (key) {
@@ -716,7 +714,7 @@ var menuEventHandler = function (e) {
 
 var playingEventHandler = function (e) {
     player.handleInput(allowedKeys[e.keyCode]);
-});
+};
 
 var gameOverEventHandler = function (e) {
     frogger.reset();
@@ -859,4 +857,3 @@ function renderTimeAndScore() {
 }
 
 start();
->>>>>>> develop-new
