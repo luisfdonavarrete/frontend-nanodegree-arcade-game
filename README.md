@@ -8,5 +8,9 @@ Use the  **arrow keys** ![arrows](images/arrows.jpg)  to select your character
 
 ![one](images/char-boy.png)![two](images/char-cat-girl.png)![three](images/char-horn-girl.png)![four](images/char-pink-girl.png)![five](images/char-princess-girl.png)
 
-Move the player around the map, trying to avoid enemies![bug](images/enemy-bug.png) and water blocks ![Water](images/water-block.png)
+Move the player around the map, trying to avoid 
+
+enemies![bug](images/enemy-bug.png) 
+
+and water blocks ![Water](images/water-block.png)
 
