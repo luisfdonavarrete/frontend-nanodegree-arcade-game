@@ -1,6 +1,7 @@
-frontend-nanodegree-arcade-game
-===============================
+Frogger (Clone):
+Classic arcade game clone project for Udacity Front-End Web Developer Nanodegree
 
-Students should use this rubric: https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797
+This is the source code for my take on the classic arcade game, Frogger (and you can play the game [here](http://bahalps.github.io/frontend-nanodegree-arcade-game/)).  In the game you'll control this guy.  
 
-for self-checking their submission.
+Use the  **arrow keys** ![Keys](images/arrows.png)  to select your character 
+![one](images/char-boy.png)![two](images/char-cat-girl.png)![three](images/char-horn-girl.png)![four](images/char-pink-girl.png)![five](images/char-princess-girl.png)
