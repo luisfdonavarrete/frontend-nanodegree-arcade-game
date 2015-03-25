@@ -2,7 +2,7 @@
 
 Classic arcade game clone project for Udacity Front-End Web Developer Nanodegree
 
-Give the game a try [here](http://bahalps.github.io/frontend-nanodegree-arcade-game/)).
+Give the game a try [here](http://luisfdonavarrete.github.io/frontend-nanodegree-arcade-game/).
 
 Use the  **arrow keys** ![arrows](images/arrows.jpg)  to select your character 
 
