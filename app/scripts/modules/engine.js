@@ -1,3 +1,4 @@
+'use strict'
 /* Engine.js
  * This file provides the game loop functionality (update entities and render),
  * draws the initial game board on the screen, and then calls the update and
@@ -188,7 +189,7 @@ var Engine = (function (global) {
         'images/char-princess-girl.png',
         'images/key.png',
         'images/gem-blue.png',
-        'images/gem-green.png',        
+        'images/gem-green.png',
         'images/gem-orange.png',
         'images/heart.png',
         'images/Selector.png',

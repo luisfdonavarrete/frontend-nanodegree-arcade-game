@@ -1,0 +1,38 @@
+{
+  "name": "frontend-nanodegree-arcade-game",
+  "version": "1.0.0",
+  "description": "Clone of the classic arcade game Frogger",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luisfdonavarrete/frontend-nanodegree-arcade-game.git"
+  },
+  "author": "Luis Navarrete",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luisfdonavarrete/frontend-nanodegree-arcade-game/issues"
+  },
+  "homepage": "https://github.com/luisfdonavarrete/frontend-nanodegree-arcade-game#readme",
+  "devDependencies": {
+    "browser-sync": "^2.11.1",
+    "browserify": "^13.0.0",
+    "del": "^2.2.0",
+    "exorcist": "^0.4.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-if": "^2.0.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-merge-json": "^0.3.0",
+    "gulp-minify-css": "^1.2.3",
+    "gulp-minify-html": "^1.0.5",
+    "gulp-rev": "^7.0.0",
+    "gulp-rev-replace": "^0.4.3",
+    "gulp-uglify": "^1.5.2",
+    "gulp-util": "^3.0.7",
+    "jshint": "^2.9.1",
+    "jshint-stylish": "^2.1.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}

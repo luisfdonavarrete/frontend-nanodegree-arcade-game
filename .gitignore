@@ -1,0 +1,4 @@
+node_modules/
+.jshintrc
+builds/development/rev
+builds/productiont/rev
