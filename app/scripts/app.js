@@ -1,8 +1,26 @@
 'use strict';
 
-var Player = require('./entities/player.js');
+var Player = require('./entities/player');
+var Engine = require('./modules/engine');
+var Enemy = require('./entities/enemy');
 
 var player = new Player();
+Engine.subscribeEntity(player);
+var allEnemies = [];
+
+function createEnemies() {
+  [
+    {"x": 0, "y": 133, "velocity": 80},
+    {"x": 0, "y": 216, "velocity": 55},
+    {"x": 0, "y": 299, "velocity": 20}
+  ].forEach(function (enemy) {
+    var aux = new Enemy(enemy.x, enemy.y, enemy.velocity);
+    allEnemies.push(aux);
+  });
+}
+createEnemies();
+Engine.subscribeEntity(allEnemies);
+
 //
 //
 //
@@ -690,14 +708,7 @@ var player = new Player();
 //     frogger = (frogger) ? frogger : new Frogger();
 // }
 //
-// /**
-//  * Calute the distance between two point on the canvas
-//  * @param {object} p - an object that represent a point on the canvas (p.x, p.y)
-//  * @param {object} q - an object that represent a point on the canvas (q.x, q.y)
-//  */
-// function distanceTwoPoint(p, q) {
-//     return Math.sqrt(Math.pow((p.x - q.x), 2) + Math.pow((p.y - q.y), 2));
-// }
+
 //
 // /**
 //  * create the gem objects according to the level
@@ -720,54 +731,6 @@ var player = new Player();
 //         allEnemies.push(aux);
 //     });
 //     return allEnemies;
-// }
-//
-// /**
-//  * create the gems object according to the level
-//  * @param {number} x - the x coordinate of the point
-//  * @param {number} y - the y coordinate of the point
-//  * @return {object} - retunt an object of the form {"x": x, "y": y};
-//  */
-// function buildPoint(x, y) {
-//     return {
-//         "x": x,
-//         "y": y
-//     };
-// }
-//
-// /**
-//  * Convert a range in a range to another range
-//  * @param {number} rangeStart - the minimum value of the range we want to convert from
-//  * @param {number} rangeEnd -  the maximu value of the range we want to convert from
-//  * @param {number} newRangeStart - the minimum value of the range we want to convert
-//  * @param {number} newRangeEnd - the maximum value of the range we want to convert
-//  * @param {number} value - the value we want to convert
-//  * $return {number}
-//  */
-// function convertRange(rangeStart, rangeEnd, newRangeStart, newRangeEnd, value) {
-//     var scale = (newRangeEnd - newRangeStart) / (rangeEnd - rangeStart);
-//     return (value * scale) + newRangeStart;
-// }
-//
-// /** .
-//  * @param {object} object - the player object
-//  * @param {number} x - the x coordinate on tha canvas
-//  * @param {number} y - the y coordinate on tha canvas
-//  * @return {bool}
-//  */
-// function outOfbound(object, x, y) {
-//     var newBottomY = y + object.height;
-//     var newTopY = y;
-//     var newRightX = x + object.width;
-//     var newLeftX = x;
-//     var topLimit = 48;
-//     var bottomLimit = 548;
-//     var rightLimit = ctx.canvas.width;
-//     var leftLimit = 0;
-//     return newBottomY > bottomLimit ||
-//         newTopY < topLimit ||
-//         newLeftX < leftLimit ||
-//         newRightX > rightLimit;
 // }
 //
 // /**

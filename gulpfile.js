@@ -16,12 +16,13 @@ var gulp = require('gulp'),
   merge = require('gulp-merge-json'),
   del = require('del'),
   rev = require('gulp-rev'),
+  imagemin = require('gulp-imagemin'),
+  cache = require('gulp-cache'),
   revReplace = require('gulp-rev-replace');
 
 var env,
   htmlSources,
   jsSources,
-  jsxSources,
   cssSources,
   outputDir,
   appEntryPoint;
@@ -125,7 +126,14 @@ gulp.task('build', ['revision'], function () {
     .pipe(gulp.dest(outputDir));
 });
 
-gulp.task('serve', ['jshint', 'fonts', 'build'], function () {
+// Images
+gulp.task('imagemin', function () {
+	return del([outputDir + 'images']), gulp.src('app/images/**/*')
+		.pipe(cache(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true })))
+		.pipe(gulp.dest(outputDir + 'images'));
+});
+
+gulp.task('serve', ['jshint', 'imagemin', 'fonts', 'build'], function () {
   browserSync.init({
     server: outputDir,
     logFileChanges: false,

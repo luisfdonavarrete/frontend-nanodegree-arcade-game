@@ -1,5 +1,6 @@
 'use strict';
-var sprite = require('./sprite');
+var Sprite = require('./sprite');
+var Resources = require('../modules/resources');
 /**
  * Represents a Key.
  * @class Key
@@ -41,14 +42,16 @@ Key.prototype.update = function (dt) {
  * @method render
  */
 Key.prototype.render = function () {
-    if (!player.key) {
-        ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
-    } else {
-        this.drawX = player.drawX;
-        this.drawY = player.drawY + (player.height - this.heightScale);
-        this.centerX = this.drawX + (this.widthScale * 0.5);
-        this.centerY = this.drawY + (this.heightScale * 0.5);
-        ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.widthScale, this.heightScale);
-    }
+  /*TODO: rewrite this method, the player object does not anything to do here*/
+    // if (!player.key) {
+    //     ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+    // } else {
+    //     this.drawX = player.drawX;
+    //     this.drawY = player.drawY + (player.height - this.heightScale);
+    //     this.centerX = this.drawX + (this.widthScale * 0.5);
+    //     this.centerY = this.drawY + (this.heightScale * 0.5);
+    //     ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.widthScale, this.heightScale);
+    // }
+    ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.widthScale, this.heightScale);
 };
 module.exports = Key;

@@ -1,6 +1,7 @@
 'use strict';
 
 var Sprite = require('./sprite.js');
+var Resources = require('../modules/resources');
 /**
  * Represents a Live.
  * @class Live
@@ -19,7 +20,7 @@ Life.prototype.constructor = Life;
  * Render the image
  * @method setSprite
  */
-Life.prototype.render = function () {
+Life.prototype.render = function (ctx) {
     ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.scaleWidth, this.scaleHeight);
     if (!this.state) {
         ctx.beginPath();

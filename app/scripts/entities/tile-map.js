@@ -1,5 +1,6 @@
 'use strict';
 var Sprite = require('./sprite');
+var Resources = require('../modules/resources');
 /**
   * Represents a TileMap.
   * @class TileMap
@@ -18,7 +19,7 @@ TileMap.prototype.constructor = TileMap;
   * Render the image using the x and y attributes.
   * @method render
   */
-TileMap.prototype.render = function () {
+TileMap.prototype.render = function (ctx) {
   ctx.drawImage(Resources.get(this.sprite), this.x * this.width, this.y * this.height);
 };
 module.exports = TileMap;

@@ -1,5 +1,6 @@
 'use strict';
 var Sprite = require('./sprite.js');
+var Resources = require('../modules/resources');
 
 /**
  * Represents a Door inherent from TileMap.
@@ -20,7 +21,7 @@ Door.prototype.constructor = Door;
  * Render the image using the x and y attributes.
  * @method render
  */
-Door.prototype.render = function () {
+Door.prototype.render = function (ctx) {
     ctx.drawImage(Resources.get(this.sprite), this.x * this.width, this.y * this.height);
     ctx.drawImage(Resources.get(this.doorSprite), this.x * this.width, this.y * this.height - 19);
 };

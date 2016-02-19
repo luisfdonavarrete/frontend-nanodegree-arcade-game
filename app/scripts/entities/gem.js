@@ -1,5 +1,7 @@
 'use strict';
 var Sprite = require('./sprite');
+var Resources = require('../modules/resources');
+var Utils = require('../utils/utils');
 
 /**
  * Represents a Gem.
@@ -33,9 +35,9 @@ Gem.prototype.update = function (dt) {
  * Render the image using the x and y attributes.
  * @method render
  */
-Gem.prototype.render = function () {
+Gem.prototype.render = function (ctx) {
     if (this.time > 0) {
-        ctx.globalAlpha = convertRange(0, this.liveTime, 0, 1, this.time);
+        ctx.globalAlpha = Utils.convertRange(0, this.liveTime, 0, 1, this.time);
         ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
         ctx.globalAlpha = 1;
     }

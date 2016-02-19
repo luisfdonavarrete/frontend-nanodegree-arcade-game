@@ -1,9 +1,27 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-var Player = require('./entities/player.js');
+var Player = require('./entities/player');
+var Engine = require('./modules/engine');
+var Enemy = require('./entities/enemy');
 
 var player = new Player();
+Engine.subscribeEntity(player);
+var allEnemies = [];
+
+function createEnemies() {
+  [
+    {"x": 0, "y": 133, "velocity": 80},
+    {"x": 0, "y": 216, "velocity": 55},
+    {"x": 0, "y": 299, "velocity": 20}
+  ].forEach(function (enemy) {
+    var aux = new Enemy(enemy.x, enemy.y, enemy.velocity);
+    allEnemies.push(aux);
+  });
+}
+createEnemies();
+Engine.subscribeEntity(allEnemies);
+
 //
 //
 //
@@ -691,14 +709,7 @@ var player = new Player();
 //     frogger = (frogger) ? frogger : new Frogger();
 // }
 //
-// /**
-//  * Calute the distance between two point on the canvas
-//  * @param {object} p - an object that represent a point on the canvas (p.x, p.y)
-//  * @param {object} q - an object that represent a point on the canvas (q.x, q.y)
-//  */
-// function distanceTwoPoint(p, q) {
-//     return Math.sqrt(Math.pow((p.x - q.x), 2) + Math.pow((p.y - q.y), 2));
-// }
+
 //
 // /**
 //  * create the gem objects according to the level
@@ -721,54 +732,6 @@ var player = new Player();
 //         allEnemies.push(aux);
 //     });
 //     return allEnemies;
-// }
-//
-// /**
-//  * create the gems object according to the level
-//  * @param {number} x - the x coordinate of the point
-//  * @param {number} y - the y coordinate of the point
-//  * @return {object} - retunt an object of the form {"x": x, "y": y};
-//  */
-// function buildPoint(x, y) {
-//     return {
-//         "x": x,
-//         "y": y
-//     };
-// }
-//
-// /**
-//  * Convert a range in a range to another range
-//  * @param {number} rangeStart - the minimum value of the range we want to convert from
-//  * @param {number} rangeEnd -  the maximu value of the range we want to convert from
-//  * @param {number} newRangeStart - the minimum value of the range we want to convert
-//  * @param {number} newRangeEnd - the maximum value of the range we want to convert
-//  * @param {number} value - the value we want to convert
-//  * $return {number}
-//  */
-// function convertRange(rangeStart, rangeEnd, newRangeStart, newRangeEnd, value) {
-//     var scale = (newRangeEnd - newRangeStart) / (rangeEnd - rangeStart);
-//     return (value * scale) + newRangeStart;
-// }
-//
-// /** .
-//  * @param {object} object - the player object
-//  * @param {number} x - the x coordinate on tha canvas
-//  * @param {number} y - the y coordinate on tha canvas
-//  * @return {bool}
-//  */
-// function outOfbound(object, x, y) {
-//     var newBottomY = y + object.height;
-//     var newTopY = y;
-//     var newRightX = x + object.width;
-//     var newLeftX = x;
-//     var topLimit = 48;
-//     var bottomLimit = 548;
-//     var rightLimit = ctx.canvas.width;
-//     var leftLimit = 0;
-//     return newBottomY > bottomLimit ||
-//         newTopY < topLimit ||
-//         newLeftX < leftLimit ||
-//         newRightX > rightLimit;
 // }
 //
 // /**
@@ -819,10 +782,52 @@ var player = new Player();
 //
 // start();
 
-},{"./entities/player.js":3}],2:[function(require,module,exports){
+},{"./entities/enemy":2,"./entities/player":4,"./modules/engine":6}],2:[function(require,module,exports){
+'use strict';
+var Sprite = require('./sprite');
+var Resources = require('../modules/resources');
+var Constants = require('../utils/constants');
+
+/**
+* Represents a Enemy.
+* @class Enemy
+* @constructor
+* @param {number} x - the x coordinate where to place the image
+* @param {number} y - the y coordinate where to place the image
+* @param {number} velocity - the velocity of the enemy
+*/
+function Enemy(x, y, velocity) {
+  Sprite.call(this, "images/enemy-bug.png", 0, 70, x, y, 101, 83);
+  this.velocity = velocity;
+}
+Enemy.prototype = Object.create(Sprite.prototype);
+Enemy.prototype.constructor = Enemy;
+/**
+* Increase the x coordinate.
+* @method update
+*/
+Enemy.prototype.update = function (dt) {
+  this.drawX = (this.drawX > Constants.CANVAS_WITH) ? (-1 * this.width) : (this.drawX + (this.velocity * dt));
+  this.centerX = this.drawX + (this.width * 0.5);
+  this.centerY = this.drawY + (this.height * 0.5);
+};
+
+/**
+* Render the image of the enemy
+* @method render
+*/
+Enemy.prototype.render = function (ctx) {
+  console.log("dt");
+  ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+};
+
+module.exports = Enemy;
+
+},{"../modules/resources":7,"../utils/constants":8,"./sprite":5}],3:[function(require,module,exports){
 'use strict';
 
 var Sprite = require('./sprite.js');
+var Resources = require('../modules/resources');
 /**
  * Represents a Live.
  * @class Live
@@ -841,7 +846,7 @@ Life.prototype.constructor = Life;
  * Render the image
  * @method setSprite
  */
-Life.prototype.render = function () {
+Life.prototype.render = function (ctx) {
     ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.scaleWidth, this.scaleHeight);
     if (!this.state) {
         ctx.beginPath();
@@ -853,11 +858,12 @@ Life.prototype.render = function () {
 };
 module.exports = Life;
 
-},{"./sprite.js":4}],3:[function(require,module,exports){
+},{"../modules/resources":7,"./sprite.js":5}],4:[function(require,module,exports){
 'use strict';
 
 var Sprite = require('./sprite');
 var Life = require('./life');
+var Resources = require('../modules/resources');
 /**
  * Represents a Player.
  * @class Player
@@ -878,7 +884,7 @@ Player.prototype.constructor = Player;
  * Update the center point of the player
  * @method update
  */
-Player.prototype.update = function () {
+Player.prototype.update = function (dt) {
     this.centerX = this.drawX + (this.width * 0.5);
     this.centerY = this.drawY + (this.height * 0.5);
 };
@@ -897,11 +903,11 @@ Player.prototype.init = function (initialPosition) {
  * Render the player and the calls the render method on the lives objets.
  * @method render
  */
-Player.prototype.render = function () {
+Player.prototype.render = function (ctx) {
     ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
     ctx.globalAlpha = 1;
-    this.lives.forEach(function (live) {
-        live.render();
+    this.lifes.forEach(function (live) {
+        live.render(ctx);
     });
 };
 /**
@@ -1003,7 +1009,7 @@ Player.prototype.checkCondicion = function (newDrawX, newDrawY) {
     var row = parseInt(newDrawY / this.height);
     var column = parseInt(newDrawX / this.width);
     if (gameData["level" + currentLevel].end_position.x === row && gameData["level" + currentLevel].end_position.y === column) {
-        return this.key
+        return this.key;
     } else {
         return true;
     }
@@ -1051,7 +1057,7 @@ Player.prototype.setSprite = function (sprite) {
 }
 module.exports = Player;
 
-},{"./life":2,"./sprite":4}],4:[function(require,module,exports){
+},{"../modules/resources":7,"./life":3,"./sprite":5}],5:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1071,6 +1077,354 @@ function Sprite(sprite, srcX, srcY, drawX, drawY, width, height) {
     this.centerY = this.drawY + (this.height * 0.5);
 }
 module.exports = Sprite;
+
+},{}],6:[function(require,module,exports){
+'use strict';
+var Resources = require('./resources');
+var Constants = require('../utils/constants');
+/* Engine.js
+* This file provides the game loop functionality (update entities and render),
+* draws the initial game board on the screen, and then calls the update and
+* render methods on your player and enemy objects (defined in your app.js).
+*
+* A game engine works by drawing the entire game screen over and over, kind of
+* like a flipbook you may have created as a kid. When your player moves across
+* the screen, it may look like just that image/character is moving or being
+* drawn but that is not the case. What's really happening is the entire "scene"
+* is being drawn over and over, presenting the illusion of animation.
+*
+* This engine is available globally via the Engine variable and it also makes
+* the canvas' context (ctx) object globally available to make writing app.js
+* a little simpler to work with.
+*/
+
+var Engine = (function () {
+  /* Predefine the variables we'll be using within this scope,
+  * create the canvas element, grab the 2D context for that canvas
+  * set the canvas elements height/width and add it to the DOM.
+  */
+  var canvas = document.createElement('canvas'),
+    ctx = canvas.getContext('2d'),
+    lastTime,
+    entities = [];
+  canvas.width = Constants.CANVAS_WIDTH;
+  canvas.height = Constants.CANVAS_HEIGHT;
+  document.body.appendChild(canvas);
+
+  /* This function is called by the render function and is called on each game
+  * tick. It's purpose is to then call the render functions you have defined
+  * on your enemy and player entities within app.js
+  */
+  function renderEntities() {
+    /* Loop through all of the objects within the allEnemies array and call
+    * the render function you have defined.
+    */
+    var renderAllEntities = function (entities) {
+      if (entities) {
+        for (var i = 0; i < entities.length; i++) {
+          if (!Array.isArray(entities[i]) && typeof entities[i].render !== 'undefined') {
+            entities[i].render(ctx);
+          }
+          else {
+            return renderAllEntities(entities[i]);
+          }
+        }
+      }
+    };
+    renderAllEntities(entities);
+  }
+
+  /* This function initially draws the "game level", it will then call
+  * the renderEntities function. Remember, this function is called every
+  * game tick (or loop of the game engine) because that's how games work -
+  * they are flipbooks creating the illusion of animation but in reality
+  * they are just drawing the entire screen over and over.
+  */
+  function render() {
+    /* This array holds the relative URL to the image used
+    * for that particular row of the game level.
+    */
+    var rowImages = [
+      'images/water-block.png', // Top row is water
+      'images/stone-block.png', // Row 1 of 3 of stone
+      'images/stone-block.png', // Row 2 of 3 of stone
+      'images/stone-block.png', // Row 3 of 3 of stone
+      'images/grass-block.png', // Row 1 of 2 of grass
+      'images/grass-block.png' // Row 2 of 2 of grass
+    ],
+    numRows = 6,
+    numCols = 5,
+    row, col;
+    /* Loop through the number of rows and columns we've defined above
+    * and, using the rowImages array, draw the correct image for that
+    * portion of the "grid"
+    */
+    for (row = 0; row < numRows; row++) {
+      for (col = 0; col < numCols; col++) {
+        /* The drawImage function of the canvas' context element
+        * requires 3 parameters: the image to draw, the x coordinate
+        * to start drawing and the y coordinate to start drawing.
+        * We're using our Resources helpers to refer to our images
+        * so that we get the benefits of caching these images, since
+        * we're using them over and over.
+        */
+        ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+      }
+    }
+    renderEntities();
+  }
+
+  /* This is called by the update function  and loops through all of the
+  * objects within your allEnemies array as defined in app.js and calls
+  * their update() methods. It will then call the update function for your
+  * player object. These update methods should focus purely on updating
+  * the data/properties related to  the object. Do your drawing in your
+  * render methods.
+  */
+  function updateEntities(dt) {
+    var updateAllEntities = function (entities) {
+      if (entities) {
+        for (var i = 0; i < entities.length; i++) {
+          if (!Array.isArray(entities[i]) && typeof entities[i].update !== 'undefined') {
+            entities[i].update(dt);
+          }
+          else {
+            return updateAllEntities(entities[i]);
+          }
+        }
+      }
+    };
+    updateAllEntities(entities);
+  }
+
+  /* This function is called by main (our game loop) and itself calls all
+  * of the functions which may need to update entity's data. Based on how
+  * you implement your collision detection (when two entities occupy the
+  * same space, for instance when your character should die), you may find
+  * the need to add an additional function call here. For now, we've left
+  * it commented out - you may or may not want to implement this
+  * functionality this way (you could just implement collision detection
+  * on the entities themselves within your app.js file).
+  */
+  function update(dt) {
+    updateEntities(dt);
+    // checkCollisions();
+  }
+
+  /* This function serves as the kickoff point for the game loop itself
+  * and handles properly calling the update and render methods.
+  */
+  function main() {
+    /* Get our time delta information which is required if your game
+    * requires smooth animation. Because everyone's computer processes
+    * instructions at different speeds we need a constant value that
+    * would be the same for everyone (regardless of how fast their
+    * computer is) - hurray time!
+    */
+    var now = Date.now(),
+    dt = (now - lastTime) / 1000.0;
+    /* Call our update/render functions, pass along the time delta to
+    * our update function since it may be used for smooth animation.
+    */
+    update(dt);
+    render();
+
+    /* Set our lastTime variable which is used to determine the time delta
+    * for the next time this function is called.
+    */
+    lastTime = now;
+
+    /* Use the browser's requestAnimationFrame function to call this
+    * function again as soon as the browser is able to draw another frame.
+    */
+    window.requestAnimationFrame(main);
+  }
+
+  /* This function does nothing but it could have been a good place to
+  * handle game reset states - maybe a new game menu or a game over screen
+  * those sorts of things. It's only called once by the init() method.
+  */
+  function reset() {
+    // noop
+  }
+
+  /* This function does some initial setup that should only occur once,
+  * particularly setting the lastTime variable that is required for the
+  * game loop.
+  */
+  function init() {
+    reset();
+    lastTime = Date.now();
+    main();
+  }
+
+  /* Go ahead and load all of the images we know we're going to need to
+  * draw our game level. Then set init as the callback method, so that when
+  * all of these images are properly loaded our game will start.
+  */
+
+
+  /* Assign the canvas' context object to the global variable (the window
+  * object when run in a browser) so that developer's can use it more easily
+  * from within their app.js files.
+  */
+  Resources.load([
+    'images/stone-block.png',
+    'images/water-block.png',
+    'images/grass-block.png',
+    'images/enemy-bug.png',
+    'images/char-boy.png',
+    'images/char-cat-girl.png',
+    'images/char-horn-girl.png',
+    'images/char-pink-girl.png',
+    'images/char-princess-girl.png',
+    'images/key.png',
+    'images/gem-blue.png',
+    'images/gem-green.png',
+    'images/gem-orange.png',
+    'images/heart.png',
+    'images/Selector.png',
+    'images/door.png'
+  ]);
+  Resources.onReady(init);
+
+  return {
+    subscribeEntity: function(entity) {
+      entities.push(entity);
+    },
+    unsubscribeEntity: function(entity) {
+      var index = this.observers.indexOf(entity);
+      if(index > -1) {
+        this.observers.splice(index, 1);
+      }
+    }
+  };
+})();
+module.exports = Engine;
+
+},{"../utils/constants":8,"./resources":7}],7:[function(require,module,exports){
+'use strict';
+
+/* Resources.js
+* This is simple an image loading utility. It eases the process of loading
+* image files so that they can be used within your game. It also includes
+* a simple "caching" layer so it will reuse cached images if you attempt
+* to load the same image multiple times.
+*/
+var Resources = (function() {
+  var resourceCache = {};
+  var readyCallbacks = [];
+
+  /* This function determines if all of the images that have been requested
+  * for loading have in fact been completed loaded.
+  */
+  function isReady() {
+    var ready = true;
+    for(var k in resourceCache) {
+      if(resourceCache.hasOwnProperty(k) &&
+      !resourceCache[k]) {
+        ready = false;
+      }
+    }
+    return ready;
+  }
+
+  /* This is our private image loader function, it is
+  * called by the public image loader function.
+  */
+  function _load(url) {
+    if(resourceCache[url]) {
+      /* If this URL has been previously loaded it will exist within
+      * our resourceCache array. Just return that image rather
+      * re-loading the image.
+      */
+      return resourceCache[url];
+    }
+    else {
+      /* This URL has not been previously loaded and is not present
+      * within our cache; we'll need to load this image.
+      */
+      var img = new Image();
+      img.onload = function() {
+        /* Once our image has properly loaded, add it to our cache
+        * so that we can simply return this image if the developer
+        * attempts to load this file in the future.
+        */
+        resourceCache[url] = img;
+
+        /* Once the image is actually loaded and properly cached,
+        * call all of the onReady() callbacks we have defined.
+        */
+        if(isReady()) {
+          readyCallbacks.forEach(function(func) { func(); });
+        }
+      };
+
+      /* Set the initial cache value to false, this will change when
+      * the image's onload event handler is called. Finally, point
+      * the images src attribute to the passed in URL.
+      */
+      resourceCache[url] = false;
+      img.src = url;
+    }
+  }
+
+  /* This is the publicly accessible image loading function. It accepts
+  * an array of strings pointing to image files or a string for a single
+  * image. It will then call our private image loading function accordingly.
+  */
+  function load(urlOrArr) {
+    if(urlOrArr instanceof Array) {
+      /* If the developer passed in an array of images
+      * loop through each value and call our image
+      * loader on that image file
+      */
+      urlOrArr.forEach(function(url) {
+        _load(url);
+      });
+    }
+    else {
+      /* The developer did not pass an array to this function,
+      * assume the value is a string and call our image loader
+      * directly.
+      */
+      _load(urlOrArr);
+    }
+  }
+
+  /* This is used by developer's to grab references to images they know
+  * have been previously loaded. If an image is cached, this functions
+  * the same as calling load() on that URL.
+  */
+  function get(url) {
+    return resourceCache[url];
+  }
+  /* This function will add a function to the callback stack that is called
+  * when all requested images are properly loaded.
+  */
+  function onReady(func) {
+    readyCallbacks.push(func);
+  }
+  /* This object defines the publicly accessible functions available to
+  * developers by creating a global Resources object.
+  */
+  return {
+    load: load,
+    get: get,
+    onReady: onReady,
+    isReady: isReady
+  };
+})();
+
+module.exports = Resources;
+
+},{}],8:[function(require,module,exports){
+'use strict';
+
+module.exports = Object.freeze({
+    CANVAS_WIDTH: 505,
+    CANVAS_HEIGHT: 606
+});
 
 },{}]},{},[1])
 //# sourceMappingURL=app.js.map

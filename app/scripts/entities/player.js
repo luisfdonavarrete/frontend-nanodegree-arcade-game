@@ -2,6 +2,7 @@
 
 var Sprite = require('./sprite');
 var Life = require('./life');
+var Resources = require('../modules/resources');
 /**
  * Represents a Player.
  * @class Player
@@ -22,7 +23,7 @@ Player.prototype.constructor = Player;
  * Update the center point of the player
  * @method update
  */
-Player.prototype.update = function () {
+Player.prototype.update = function (dt) {
     this.centerX = this.drawX + (this.width * 0.5);
     this.centerY = this.drawY + (this.height * 0.5);
 };
@@ -41,11 +42,11 @@ Player.prototype.init = function (initialPosition) {
  * Render the player and the calls the render method on the lives objets.
  * @method render
  */
-Player.prototype.render = function () {
+Player.prototype.render = function (ctx) {
     ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
     ctx.globalAlpha = 1;
-    this.lives.forEach(function (live) {
-        live.render();
+    this.lifes.forEach(function (live) {
+        live.render(ctx);
     });
 };
 /**
@@ -147,7 +148,7 @@ Player.prototype.checkCondicion = function (newDrawX, newDrawY) {
     var row = parseInt(newDrawY / this.height);
     var column = parseInt(newDrawX / this.width);
     if (gameData["level" + currentLevel].end_position.x === row && gameData["level" + currentLevel].end_position.y === column) {
-        return this.key
+        return this.key;
     } else {
         return true;
     }
