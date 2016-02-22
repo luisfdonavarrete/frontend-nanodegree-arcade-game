@@ -9,9 +9,14 @@ var Resources = require('../modules/resources');
   * @param {number} y - the y coordinate where to place the image
   * @param {string} sprite - the image url to be drawn
   */
-function TileMap(x, y, sprite) {
-  Sprite.call(this, sprite, 0, 0, x, y, 101, 83);
-  this.type = sprite; /* It is going to be base on the sprite fie name (grass, stone, water)*/
+function TileMap(x, y, type) {
+  var types = {
+    'grass': 'images/water-block.png',
+    'stone': 'images/grass-block.png',
+    'water': 'images/stone-block.png'
+  };
+  Sprite.call(this, types[type], 0, 0, x, y, 101, 83);
+  this.type = type;
 }
 TileMap.prototype = Object.create(Sprite.prototype);
 TileMap.prototype.constructor = TileMap;
@@ -20,6 +25,6 @@ TileMap.prototype.constructor = TileMap;
   * @method render
   */
 TileMap.prototype.render = function (ctx) {
-  ctx.drawImage(Resources.get(this.sprite), this.x * this.width, this.y * this.height);
+  ctx.drawImage(Resources.get(this.sprite), this.drawX * this.width, this.drawY * this.height);
 };
 module.exports = TileMap;

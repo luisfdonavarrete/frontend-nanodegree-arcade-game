@@ -75,6 +75,11 @@ gulp.task('fonts', function () {
 		.pipe(gulp.dest(outputDir + 'fonts'));
 });
 
+gulp.task('copy-game-data', function () {
+	return gulp.src('./app/data/*.json')
+		.pipe(gulp.dest(outputDir + 'data'));
+});
+
 function bundle (bundler) {
   return bundler
     .bundle()
@@ -133,7 +138,7 @@ gulp.task('imagemin', function () {
 		.pipe(gulp.dest(outputDir + 'images'));
 });
 
-gulp.task('serve', ['jshint', 'imagemin', 'fonts', 'build'], function () {
+gulp.task('serve', ['jshint', 'imagemin', 'fonts', 'copy-game-data', 'build'], function () {
   browserSync.init({
     server: outputDir,
     logFileChanges: false,

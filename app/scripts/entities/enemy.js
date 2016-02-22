@@ -22,7 +22,7 @@ Enemy.prototype.constructor = Enemy;
 * @method update
 */
 Enemy.prototype.update = function (dt) {
-  this.drawX = (this.drawX > Constants.CANVAS_WITH) ? (-1 * this.width) : (this.drawX + (this.velocity * dt));
+  this.drawX = (this.drawX > Constants.CANVAS_WIDTH) ? (-1 * this.width) : (this.drawX + (this.velocity * dt));
   this.centerX = this.drawX + (this.width * 0.5);
   this.centerY = this.drawY + (this.height * 0.5);
 };
@@ -32,7 +32,6 @@ Enemy.prototype.update = function (dt) {
 * @method render
 */
 Enemy.prototype.render = function (ctx) {
-  console.log("dt");
   ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
 };
 

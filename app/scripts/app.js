@@ -1,25 +1,56 @@
 'use strict';
+(function () {
+  var $ = require('jquery');
+  var Player = require('./entities/player');
+  var Engine = require('./modules/engine');
+  var Enemy = require('./entities/enemy');
+  var LevelInfo = require('./entities/level-info');
+  var Map = require('./entities/map');
 
-var Player = require('./entities/player');
-var Engine = require('./modules/engine');
-var Enemy = require('./entities/enemy');
 
-var player = new Player();
-Engine.subscribeEntity(player);
-var allEnemies = [];
+  var currentLevel = 0;
+  var player;
+  var allEnemies = [];
+  var levels;
+  var map;
 
-function createEnemies() {
-  [
-    {"x": 0, "y": 133, "velocity": 80},
-    {"x": 0, "y": 216, "velocity": 55},
-    {"x": 0, "y": 299, "velocity": 20}
-  ].forEach(function (enemy) {
-    var aux = new Enemy(enemy.x, enemy.y, enemy.velocity);
-    allEnemies.push(aux);
+
+  function start (data) {
+    levels = data.levels.map(function (level) {
+      return new LevelInfo(
+        level.map,
+        level.key,
+        level.gems,
+        level.enemies,
+        level.playerPosition,
+        level.endPosition
+      );
+    });
+    map = new Map(levels[currentLevel].map);
+    player = new Player();
+
+    function createEnemies() {
+      [
+        {"x": 0, "y": 133, "velocity": 80},
+        {"x": 0, "y": 216, "velocity": 55},
+        {"x": 0, "y": 299, "velocity": 20}
+      ].forEach(function (enemy) {
+        var aux = new Enemy(enemy.x, enemy.y, enemy.velocity);
+        allEnemies.push(aux);
+      });
+    }
+    createEnemies();
+    Engine.subscribeEntity(map);
+    Engine.subscribeEntity(allEnemies);
+    Engine.subscribeEntity(player);
+  }
+
+  $.getJSON('data/game-data.json', function (data) {
+    //levelInfo = new LevelInfo();
+    start(data)
+
   });
-}
-createEnemies();
-Engine.subscribeEntity(allEnemies);
+}());
 
 //
 //
@@ -742,16 +773,7 @@ Engine.subscribeEntity(allEnemies);
 //     });
 // }
 //
-// /**
-//  * interate over the map array to draw it on the canvas
-// */
-// function renderMap() {
-//     map.forEach(function (row) {
-//         row.forEach(function (tile) {
-//             tile.render();
-//         });
-//     });
-// }
+//
 //
 // /**
 //  * interate over the gems array to draw them on the canvas

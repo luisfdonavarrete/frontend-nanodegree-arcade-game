@@ -45,7 +45,7 @@ var Engine = (function () {
             entities[i].render(ctx);
           }
           else {
-            return renderAllEntities(entities[i]);
+            renderAllEntities(entities[i]);
           }
         }
       }
@@ -60,6 +60,7 @@ var Engine = (function () {
   * they are just drawing the entire screen over and over.
   */
   function render() {
+    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
     /* This array holds the relative URL to the image used
     * for that particular row of the game level.
     */
@@ -87,7 +88,7 @@ var Engine = (function () {
         * so that we get the benefits of caching these images, since
         * we're using them over and over.
         */
-        ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+        //ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
       }
     }
     renderEntities();
@@ -108,7 +109,7 @@ var Engine = (function () {
             entities[i].update(dt);
           }
           else {
-            return updateAllEntities(entities[i]);
+            updateAllEntities(entities[i]);
           }
         }
       }
