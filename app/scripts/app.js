@@ -2,26 +2,50 @@
 (function () {
   var $ = require('jquery');
   var Player = require('./entities/player');
-  var Engine = require('./modules/engine');
   var Enemy = require('./entities/enemy');
   var LevelInfo = require('./entities/level-info');
   var Map = require('./entities/map');
   var Constants = require('./utils/constants');
+  var StateMachine = require('./modules/fsm/finite-state-machine');
+  var PlayingState = require('./modules/fsm/states/playing-state');
 
 
-  var currentLevel = 0;
-  var player;
-  var allEnemies = [];
-  var levels;
-  var map;
+  /**
+  * Represents the Frogger Game.
+  * @class Frogger
+  * @constructor
+  */
+  function Frogger() {
+    this.fsm = new StateMachine();
+    this.states = {
+      "MENU": "MENU",
+      "PLAYING": "PLAYING",
+      "PAUSED": "PAUSED",
+      "LOSING": "LOSING",
+      "TRANSITION_LEVEL": "TRANSITION_LEVEL",
+      "GAME_OVER": "GAME_OVER",
+      "END": "END"
+    };
+    this.currentLevel = 0;
+    this.player;
+    this.allEnemies = [];
+    this.levels;
+    this.map;
+    /** Define the different states that the game ca be in*/
 
+    /** Add the state to the finite state machine instane */
+    //fsm.addState(this.states.MENU, new MenuState(this), ["PLAYING"]);
 
-  function eventHandler (e) {
-    player.handleInput(Constants.ALLOWED_KEYS[e.keyCode]);
+    // fsm.addState(this.states.LOSING, new LosingState(this), ["PLAYING", "GAME_OVER"]);
+    // fsm.addState(this.states.TRANSITION_LEVEL, new TransitionLevelState(this), ["PLAYING", "END"]);
+    // fsm.addState(this.states.GAME_OVER, new GameOverState(this), ["PLAYING", "MENU"]);
+    // fsm.addState(this.states.END, new EndGameState(this), ["MENU"]);
+    /** Set the initial sate to MENU */
+
   }
 
-  function start (data) {
-    levels = data.levels.map(function (level) {
+  Frogger.prototype.start = function (data) {
+    this.levels = data.levels.map(function (level) {
       return new LevelInfo(
         level.map,
         level.key,
@@ -31,28 +55,36 @@
         level.endPosition
       );
     });
-    map = new Map(levels[currentLevel].map);
-    player = new Player(levels[currentLevel].playerPosition.x, levels[currentLevel].playerPosition.y);
+    this.map = new Map(this.levels[this.currentLevel].map);
+    this.player = new Player(this.levels[this.currentLevel].playerPosition.x, this.levels[this.currentLevel].playerPosition.y);
 
     function createEnemies() {
-      levels[currentLevel].enemies.forEach(function (enemy) {
+      this.levels[this.currentLevel].enemies.forEach(function (enemy) {
         var aux = new Enemy(enemy.x, enemy.y, enemy.velocity);
-        allEnemies.push(aux);
-      });
+        this.allEnemies.push(aux);
+      }, this);
     }
 
-
-    createEnemies();
-    Engine.subscribeEntity(map);
-    Engine.subscribeEntity(allEnemies);
-    Engine.subscribeEntity(player);
-    document.addEventListener("keyup", eventHandler, false);
+    createEnemies.call(this);
+    this.fsm.addState(this.states.PLAYING, new PlayingState(
+      {
+        map: this.map,
+        enemies: this.allEnemies,
+        player: this.player
+      }
+    ),
+    ["MENU", "PAUSED", "LOSING", "TRANSITION_LEVEL"]);
+    this.fsm.setState(this.states.PLAYING);
   }
 
-  $.getJSON('data/game-data.json', function (data) {
-    //levelInfo = new LevelInfo();
-    start(data);
 
+  function eventHandler (e) {
+    player.handleInput(Constants.ALLOWED_KEYS[e.keyCode]);
+  }
+
+  var frogger = new Frogger();
+  $.getJSON('data/game-data.json', function (data) {
+    frogger.start(data);
   });
 }());
 
@@ -73,103 +105,9 @@
 //
 // var timer = 0;
 //
-// /**
-//  * Represents a Finite State Machine.
-//  * @class FiniteStateMachine
-//  * @constructor
-//  */
-// function FiniteStateMachine() {
-//     this.states = {};
-//     this.currentState = "";
-//     this.previousState = "";
-// }
-//
-// /**
-//  * Add a new state to the states variable.
-//  * @method addState
-//  * @param {string} stateName - The name of the state.
-//  * @param {object} stateObject - The instance of the state object.
-//  * @param {array} statesAllowed - Array of state names that are allowed to switch.
-//  */
-// FiniteStateMachine.prototype.addState = function (stateName, stateObject, statesAllowed) {
-//     this.states[stateName] = {
-//         "stateName": stateName,
-//         "stateObject": stateObject,
-//         "statesAllowed": statesAllowed
-//     };
-// };
-//
-// /**
-//  * Set the current state
-//  * @method setState
-//  * @param {string} stateName - The name of the state to be set.
-//  */
-// FiniteStateMachine.prototype.setState = function (stateName) {
-//     if (this.currentState === "") {
-//         this.currentState = stateName;
-//         this.states[this.currentState].stateObject.enter();
-//         return;
-//     }
-//     if (this.currenState === stateName) {
-//         console.log("the actor is already in this state");
-//         return;
-//     }
-//     if (this.states[this.currentState].statesAllowed.indexOf(stateName) > -1) {
-//         this.states[this.currentState].stateObject.exit();
-//         this.previousState = this.currentState;
-//         this.currentState = stateName;
-//     } else {
-//         console.log("you are not allowed to switch to that " + stateName + "state being in " + this.currentState + "state");
-//     }
-//     this.states[this.currentState].stateObject.enter();
-// };
-//
-// /**
-//  * Calls the update method of the current state.
-//  * @method update
-//  * @param {number} dt - time delta information.
-//  */
-// FiniteStateMachine.prototype.update = function (dt) {
-//     this.states[this.currentState].stateObject.update(dt);
-// };
 
-// /**
-//  * Represents the Frogger Game.
-//  * @class Frogger
-//  * @constructor
-//  */
-// function Frogger() {
-//     this.velocity = 150;
-//     this.finiteStateMachine = new FiniteStateMachine();
-//     this.characters = [
-//             "images/char-boy.png",
-//             "images/char-cat-girl.png",
-//             "images/char-horn-girl.png",
-//             "images/char-pink-girl.png",
-//             "images/char-princess-girl.png"
-//         ];
-//     /** Define the different states that the game ca be in*/
-//     this.states = {
-//         "MENU": "MENU",
-//         "PLAYING": "PLAYING",
-//         "PAUSED": "PAUSED",
-//         "LOSING": "LOSING",
-//         "TRANSITION_LEVEL": "TRANSITION_LEVEL",
-//         "GAME_OVER": "GAME_OVER",
-//         "END": "END"
-//     };
-//     this.selectedCharacter = 0;
-//     this.offset = CANVAS_HEIGHT / 2 - 171 / 2;
-//     /** Add the state to the finite state machine instane */
-//     this.finiteStateMachine.addState(this.states.MENU, new MenuState(this), ["PLAYING"]);
-//     this.finiteStateMachine.addState(this.states.PLAYING, new PlayingState(this), ["MENU", "PAUSED", "LOSING", "TRANSITION_LEVEL"]);
-//     this.finiteStateMachine.addState(this.states.LOSING, new LosingState(this), ["PLAYING", "GAME_OVER"]);
-//     this.finiteStateMachine.addState(this.states.TRANSITION_LEVEL, new TransitionLevelState(this), ["PLAYING", "END"]);
-//     this.finiteStateMachine.addState(this.states.GAME_OVER, new GameOverState(this), ["PLAYING", "MENU"]);
-//     this.finiteStateMachine.addState(this.states.END, new EndGameState(this), ["MENU"]);
-//     /** Set the initial sate to MENU */
-//     this.finiteStateMachine.setState(this.states.MENU);
-// }
+
+
 //
 // /**
 //  * Calls the update method on the finite state machine
@@ -282,73 +220,7 @@
 // };
 //
 // /**
-//  * Represents a PlayingState.
-//  * @class PlayingState
-//  * @constructor
-//  * @param {object} actor - the object that has the finite state machine instance
-//  */
-// function PlayingState(actor) {
-//     this.actor = actor;
-// }
 //
-// /**
-//  * The method gets called when the game enters the state, Add event listener
-//  * @method enter
-//  */
-// PlayingState.prototype.enter = function () {
-//     document.addEventListener("keyup", playingEventHandler, false);
-// };
-//
-// /**
-//  * update the playing state
-//  * @method update
-//  * @param {number} dt - time delta information
-//  */
-// PlayingState.prototype.update = function (dt) {
-//     allEnemies.forEach(function (enemy) {
-//         enemy.update(dt);
-//     });
-//     gems.forEach(function (gem) {
-//         gem.update(dt);
-//     });
-//     key.update(dt);
-//     player.update();
-//     player.checkKey();
-//     player.checkGems();
-//     if (player.checkCollisionEnemies() || player.checkMap()) {
-//         this.actor.finiteStateMachine.setState(this.actor.states.LOSING);
-//     }
-//     if (player.checkLevel()) {
-//         this.actor.finiteStateMachine.setState(this.actor.states.TRANSITION_LEVEL);
-//     }
-//     if (player.getLives() <= 0) {
-//         this.actor.finiteStateMachine.setState(this.actor.states.GAME_OVER);
-//     }
-//     this.render();
-// };
-//
-//
-// /**
-//  * Render the playing state
-//  * @method render
-//  */
-// PlayingState.prototype.render = function () {
-//     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-//     renderTimeAndScore();
-//     renderMap();
-//     renderEnemies();
-//     renderGems();
-//     player.render();
-//     key.render();
-// };
-//
-// /**
-//  * Exit the playing state, remove event listener
-//  * @method exit
-//  */
-// PlayingState.prototype.exit = function () {
-//     document.removeEventListener("keyup", playingEventHandler, false);
-// };
 //
 // /**
 //  * Represents a LosingState.

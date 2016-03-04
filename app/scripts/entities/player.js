@@ -185,6 +185,7 @@ Player.prototype.checkLevel = function () {
 * @method handleInput
 */
 Player.prototype.handleInput = function (key) {
+  console.log("AQUi");
   this.checkMovement(key);
 };
 /**
