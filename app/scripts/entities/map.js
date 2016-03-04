@@ -4,6 +4,11 @@ var TileMap = require('./tile-map');
 function Map (mapMatriz) {
   this.mapMatriz = [];
 
+  /**
+   * Create a two dimension matriz that represent the map of the current level
+   * @param {array} levels - array of string that represent the map and different type of tile
+   * @return {array}
+  */
   function createMap(matriz) {
     var result = [];
     matriz.forEach(function (row, i) {

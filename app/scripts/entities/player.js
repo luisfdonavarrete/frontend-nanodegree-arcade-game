@@ -3,13 +3,14 @@
 var Sprite = require('./sprite');
 var Life = require('./life');
 var Resources = require('../modules/resources');
+var Utils = require('../utils/utils');
 /**
 * Represents a Player.
 * @class Player
 * @constructor
 */
-function Player() {
-  Sprite.call(this, "images/char-boy.png", 0, 63, 0, 0, 101, 83);
+function Player(x, y) {
+  Sprite.call(this, "images/char-boy.png", 0, 63, x, y, 101, 83);
   this.key = null;
   this.numOfLives = 5;
   this.lifes = [];
@@ -36,7 +37,6 @@ Player.prototype.init = function (initialPosition) {
   this.drawY = initialPosition.y;
   this.centerX = this.drawX + (this.width * 0.5);
   this.centerY = this.drawY + (this.height * 0.5);
-  this.key = false;
 };
 /**
 * Render the player and the calls the render method on the lives objets.
@@ -71,7 +71,7 @@ Player.prototype.checkMovement = function (e) {
     newDrawY -= this.height;
     break;
   }
-  if (!outOfbound(this, newDrawX, newDrawY) && this.checkCondicion(newDrawX, newDrawY)) {
+  if (!Utils.outOfbound(this, newDrawX, newDrawY) /*&& this.checkCondicion(newDrawX, newDrawY)*/) {
     this.drawX = newDrawX;
     this.drawY = newDrawY;
   }
@@ -184,8 +184,8 @@ Player.prototype.checkLevel = function () {
 * Event handler for the player input
 * @method handleInput
 */
-Player.prototype.handleInput = function (e) {
-  this.checkMovement(e);
+Player.prototype.handleInput = function (key) {
+  this.checkMovement(key);
 };
 /**
 * Set the image character of the player

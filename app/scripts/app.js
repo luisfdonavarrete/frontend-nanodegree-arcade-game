@@ -6,6 +6,7 @@
   var Enemy = require('./entities/enemy');
   var LevelInfo = require('./entities/level-info');
   var Map = require('./entities/map');
+  var Constants = require('./utils/constants');
 
 
   var currentLevel = 0;
@@ -14,6 +15,10 @@
   var levels;
   var map;
 
+
+  function eventHandler (e) {
+    player.handleInput(Constants.ALLOWED_KEYS[e.keyCode]);
+  }
 
   function start (data) {
     levels = data.levels.map(function (level) {
@@ -27,27 +32,26 @@
       );
     });
     map = new Map(levels[currentLevel].map);
-    player = new Player();
+    player = new Player(levels[currentLevel].playerPosition.x, levels[currentLevel].playerPosition.y);
 
     function createEnemies() {
-      [
-        {"x": 0, "y": 133, "velocity": 80},
-        {"x": 0, "y": 216, "velocity": 55},
-        {"x": 0, "y": 299, "velocity": 20}
-      ].forEach(function (enemy) {
+      levels[currentLevel].enemies.forEach(function (enemy) {
         var aux = new Enemy(enemy.x, enemy.y, enemy.velocity);
         allEnemies.push(aux);
       });
     }
+
+
     createEnemies();
     Engine.subscribeEntity(map);
     Engine.subscribeEntity(allEnemies);
     Engine.subscribeEntity(player);
+    document.addEventListener("keyup", eventHandler, false);
   }
 
   $.getJSON('data/game-data.json', function (data) {
     //levelInfo = new LevelInfo();
-    start(data)
+    start(data);
 
   });
 }());
@@ -66,15 +70,6 @@
 // for (var i = 0, stopCondition = Object.keys(gameData).length; i < stopCondition; i++) {
 //     score[i] = 0;
 // }
-// var CANVAS_WITH = 505;
-// var CANVAS_HEIGHT = 606;
-// var allowedKeys = {
-//     37: 'left',
-//     38: 'up',
-//     39: 'right',
-//     40: 'down',
-//     13: 'enter'
-// };
 //
 // var timer = 0;
 //
@@ -138,11 +133,6 @@
 //     this.states[this.currentState].stateObject.update(dt);
 // };
 
-//
-
-//
-//
-//
 // /**
 //  * Represents the Frogger Game.
 //  * @class Frogger
@@ -692,35 +682,8 @@
 //     return total.toFixed(2);
 // }
 //
-// /**
-//  * Create a two dimension matriz that represent the map of the current level
-//  * @param {array} levels - array of string that represent the map and different type of tile
-//  * @return {array}
-// */
-// function createMap(levels) {
-//     var mapMatriz = [];
-//     levels.forEach(function (row, i) {
-//         var mapRow = [];
-//         row.split("").forEach(function (tile, j) {
-//             switch (tile) {
-//             case "W":
-//                 mapRow.push(new WaterTile(j, i, "images/water-block.png"));
-//                 break;
-//             case "G":
-//                 mapRow.push(new GrassTile(j, i, "images/grass-block.png"));
-//                 break;
-//             case "S":
-//                 mapRow.push(new StoneTile(j, i, "images/stone-block.png"));
-//                 break;
-//             case "D":
-//                 mapRow.push(new Door(j, i, "images/stone-block.png"));
-//                 break;
-//             }
-//         });
-//         mapMatriz.push(mapRow);
-//     });
-//     return mapMatriz;
-// }
+
+
 //
 // /**
 //  * Start the current level and set the initial position of the different object

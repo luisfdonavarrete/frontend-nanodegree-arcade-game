@@ -7,6 +7,7 @@
   var Enemy = require('./entities/enemy');
   var LevelInfo = require('./entities/level-info');
   var Map = require('./entities/map');
+  var Constants = require('./utils/constants');
 
 
   var currentLevel = 0;
@@ -15,6 +16,10 @@
   var levels;
   var map;
 
+
+  function eventHandler (e) {
+    player.handleInput(Constants.ALLOWED_KEYS[e.keyCode]);
+  }
 
   function start (data) {
     levels = data.levels.map(function (level) {
@@ -28,27 +33,26 @@
       );
     });
     map = new Map(levels[currentLevel].map);
-    player = new Player();
+    player = new Player(levels[currentLevel].playerPosition.x, levels[currentLevel].playerPosition.y);
 
     function createEnemies() {
-      [
-        {"x": 0, "y": 133, "velocity": 80},
-        {"x": 0, "y": 216, "velocity": 55},
-        {"x": 0, "y": 299, "velocity": 20}
-      ].forEach(function (enemy) {
+      levels[currentLevel].enemies.forEach(function (enemy) {
         var aux = new Enemy(enemy.x, enemy.y, enemy.velocity);
         allEnemies.push(aux);
       });
     }
+
+
     createEnemies();
     Engine.subscribeEntity(map);
     Engine.subscribeEntity(allEnemies);
     Engine.subscribeEntity(player);
+    document.addEventListener("keyup", eventHandler, false);
   }
 
   $.getJSON('data/game-data.json', function (data) {
     //levelInfo = new LevelInfo();
-    start(data)
+    start(data);
 
   });
 }());
@@ -67,15 +71,6 @@
 // for (var i = 0, stopCondition = Object.keys(gameData).length; i < stopCondition; i++) {
 //     score[i] = 0;
 // }
-// var CANVAS_WITH = 505;
-// var CANVAS_HEIGHT = 606;
-// var allowedKeys = {
-//     37: 'left',
-//     38: 'up',
-//     39: 'right',
-//     40: 'down',
-//     13: 'enter'
-// };
 //
 // var timer = 0;
 //
@@ -139,11 +134,6 @@
 //     this.states[this.currentState].stateObject.update(dt);
 // };
 
-//
-
-//
-//
-//
 // /**
 //  * Represents the Frogger Game.
 //  * @class Frogger
@@ -693,35 +683,8 @@
 //     return total.toFixed(2);
 // }
 //
-// /**
-//  * Create a two dimension matriz that represent the map of the current level
-//  * @param {array} levels - array of string that represent the map and different type of tile
-//  * @return {array}
-// */
-// function createMap(levels) {
-//     var mapMatriz = [];
-//     levels.forEach(function (row, i) {
-//         var mapRow = [];
-//         row.split("").forEach(function (tile, j) {
-//             switch (tile) {
-//             case "W":
-//                 mapRow.push(new WaterTile(j, i, "images/water-block.png"));
-//                 break;
-//             case "G":
-//                 mapRow.push(new GrassTile(j, i, "images/grass-block.png"));
-//                 break;
-//             case "S":
-//                 mapRow.push(new StoneTile(j, i, "images/stone-block.png"));
-//                 break;
-//             case "D":
-//                 mapRow.push(new Door(j, i, "images/stone-block.png"));
-//                 break;
-//             }
-//         });
-//         mapMatriz.push(mapRow);
-//     });
-//     return mapMatriz;
-// }
+
+
 //
 // /**
 //  * Start the current level and set the initial position of the different object
@@ -804,7 +767,7 @@
 //
 // start();
 
-},{"./entities/enemy":2,"./entities/level-info":3,"./entities/map":5,"./entities/player":6,"./modules/engine":9,"jquery":12}],2:[function(require,module,exports){
+},{"./entities/enemy":2,"./entities/level-info":3,"./entities/map":5,"./entities/player":6,"./modules/engine":9,"./utils/constants":11,"jquery":13}],2:[function(require,module,exports){
 'use strict';
 var Sprite = require('./sprite');
 var Resources = require('../modules/resources');
@@ -899,6 +862,11 @@ var TileMap = require('./tile-map');
 function Map (mapMatriz) {
   this.mapMatriz = [];
 
+  /**
+   * Create a two dimension matriz that represent the map of the current level
+   * @param {array} levels - array of string that represent the map and different type of tile
+   * @return {array}
+  */
   function createMap(matriz) {
     var result = [];
     matriz.forEach(function (row, i) {
@@ -942,13 +910,14 @@ module.exports = Map;
 var Sprite = require('./sprite');
 var Life = require('./life');
 var Resources = require('../modules/resources');
+var Utils = require('../utils/utils');
 /**
 * Represents a Player.
 * @class Player
 * @constructor
 */
-function Player() {
-  Sprite.call(this, "images/char-boy.png", 0, 63, 0, 0, 101, 83);
+function Player(x, y) {
+  Sprite.call(this, "images/char-boy.png", 0, 63, x, y, 101, 83);
   this.key = null;
   this.numOfLives = 5;
   this.lifes = [];
@@ -975,7 +944,6 @@ Player.prototype.init = function (initialPosition) {
   this.drawY = initialPosition.y;
   this.centerX = this.drawX + (this.width * 0.5);
   this.centerY = this.drawY + (this.height * 0.5);
-  this.key = false;
 };
 /**
 * Render the player and the calls the render method on the lives objets.
@@ -1010,7 +978,7 @@ Player.prototype.checkMovement = function (e) {
     newDrawY -= this.height;
     break;
   }
-  if (!outOfbound(this, newDrawX, newDrawY) && this.checkCondicion(newDrawX, newDrawY)) {
+  if (!Utils.outOfbound(this, newDrawX, newDrawY) /*&& this.checkCondicion(newDrawX, newDrawY)*/) {
     this.drawX = newDrawX;
     this.drawY = newDrawY;
   }
@@ -1123,8 +1091,8 @@ Player.prototype.checkLevel = function () {
 * Event handler for the player input
 * @method handleInput
 */
-Player.prototype.handleInput = function (e) {
-  this.checkMovement(e);
+Player.prototype.handleInput = function (key) {
+  this.checkMovement(key);
 };
 /**
 * Set the image character of the player
@@ -1135,7 +1103,7 @@ Player.prototype.setSprite = function (sprite) {
 }
 module.exports = Player;
 
-},{"../modules/resources":10,"./life":4,"./sprite":7}],7:[function(require,module,exports){
+},{"../modules/resources":10,"../utils/utils":12,"./life":4,"./sprite":7}],7:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1170,9 +1138,9 @@ var Resources = require('../modules/resources');
   */
 function TileMap(x, y, type) {
   var types = {
-    'grass': 'images/water-block.png',
-    'stone': 'images/grass-block.png',
-    'water': 'images/stone-block.png'
+    'grass': 'images/grass-block.png',
+    'stone': 'images/stone-block.png',
+    'water': 'images/water-block.png'
   };
   Sprite.call(this, types[type], 0, 0, x, y, 101, 83);
   this.type = type;
@@ -1221,29 +1189,6 @@ var Engine = (function () {
   canvas.height = Constants.CANVAS_HEIGHT;
   document.body.appendChild(canvas);
 
-  /* This function is called by the render function and is called on each game
-  * tick. It's purpose is to then call the render functions you have defined
-  * on your enemy and player entities within app.js
-  */
-  function renderEntities() {
-    /* Loop through all of the objects within the allEnemies array and call
-    * the render function you have defined.
-    */
-    var renderAllEntities = function (entities) {
-      if (entities) {
-        for (var i = 0; i < entities.length; i++) {
-          if (!Array.isArray(entities[i]) && typeof entities[i].render !== 'undefined') {
-            entities[i].render(ctx);
-          }
-          else {
-            renderAllEntities(entities[i]);
-          }
-        }
-      }
-    };
-    renderAllEntities(entities);
-  }
-
   /* This function initially draws the "game level", it will then call
   * the renderEntities function. Remember, this function is called every
   * game tick (or loop of the game engine) because that's how games work -
@@ -1251,61 +1196,19 @@ var Engine = (function () {
   * they are just drawing the entire screen over and over.
   */
   function render() {
-    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
-    /* This array holds the relative URL to the image used
-    * for that particular row of the game level.
-    */
-    var rowImages = [
-      'images/water-block.png', // Top row is water
-      'images/stone-block.png', // Row 1 of 3 of stone
-      'images/stone-block.png', // Row 2 of 3 of stone
-      'images/stone-block.png', // Row 3 of 3 of stone
-      'images/grass-block.png', // Row 1 of 2 of grass
-      'images/grass-block.png' // Row 2 of 2 of grass
-    ],
-    numRows = 6,
-    numCols = 5,
-    row, col;
-    /* Loop through the number of rows and columns we've defined above
-    * and, using the rowImages array, draw the correct image for that
-    * portion of the "grid"
-    */
-    for (row = 0; row < numRows; row++) {
-      for (col = 0; col < numCols; col++) {
-        /* The drawImage function of the canvas' context element
-        * requires 3 parameters: the image to draw, the x coordinate
-        * to start drawing and the y coordinate to start drawing.
-        * We're using our Resources helpers to refer to our images
-        * so that we get the benefits of caching these images, since
-        * we're using them over and over.
-        */
-        //ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
-      }
-    }
-    renderEntities();
-  }
-
-  /* This is called by the update function  and loops through all of the
-  * objects within your allEnemies array as defined in app.js and calls
-  * their update() methods. It will then call the update function for your
-  * player object. These update methods should focus purely on updating
-  * the data/properties related to  the object. Do your drawing in your
-  * render methods.
-  */
-  function updateEntities(dt) {
-    var updateAllEntities = function (entities) {
+    var renderEntities = function (entities) {
       if (entities) {
-        for (var i = 0; i < entities.length; i++) {
-          if (!Array.isArray(entities[i]) && typeof entities[i].update !== 'undefined') {
-            entities[i].update(dt);
+        for (var i = 0, len = entities.length; i < len; i++) {
+          if (!Array.isArray(entities[i]) && typeof entities[i].render !== 'undefined') {
+            entities[i].render(ctx);
           }
           else {
-            updateAllEntities(entities[i]);
+            renderEntities(entities[i]);
           }
         }
       }
     };
-    updateAllEntities(entities);
+    renderEntities(entities);
   }
 
   /* This function is called by main (our game loop) and itself calls all
@@ -1318,7 +1221,19 @@ var Engine = (function () {
   * on the entities themselves within your app.js file).
   */
   function update(dt) {
-    updateEntities(dt);
+    var updateEntities = function (entities) {
+      if (entities) {
+        for (var i = 0, len = entities.length; i < len; i++) {
+          if (!Array.isArray(entities[i]) && typeof entities[i].update !== 'undefined') {
+            entities[i].update(dt);
+          }
+          else {
+            updateEntities(entities[i]);
+          }
+        }
+      }
+    };
+    updateEntities(entities);
     // checkCollisions();
   }
 
@@ -1534,10 +1449,85 @@ module.exports = Resources;
 
 module.exports = Object.freeze({
     CANVAS_WIDTH: 505,
-    CANVAS_HEIGHT: 606
+    CANVAS_HEIGHT: 606,
+    ALLOWED_KEYS: {
+      37: 'left',
+      38: 'up',
+      39: 'right',
+      40: 'down',
+      13: 'enter'
+    }
 });
 
 },{}],12:[function(require,module,exports){
+'use strict';
+var Constants = require('./constants');
+var Utils = (function () {
+  /**
+  * Calute the distance between two point on the canvas
+  * @param {object} p - an object that represent a point on the canvas (p.x, p.y)
+  * @param {object} q - an object that represent a point on the canvas (q.x, q.y)
+  */
+  var _distanceTwoPoint = function (p, q) {
+    return Math.sqrt(Math.pow((p.x - q.x), 2) + Math.pow((p.y - q.y), 2));
+  };
+  /**
+  * create the gems object according to the level
+  * @param {number} x - the x coordinate of the point
+  * @param {number} y - the y coordinate of the point
+  * @return {object} - retunt an object of the form {"x": x, "y": y};
+  */
+  var _buildPoint = function (x, y) {
+    return {
+      "x": x,
+      "y": y
+    };
+  };
+  /**
+  * Convert a range in a range to another range
+  * @param {number} rangeStart - the minimum value of the range we want to convert from
+  * @param {number} rangeEnd -  the maximu value of the range we want to convert from
+  * @param {number} newRangeStart - the minimum value of the range we want to convert
+  * @param {number} newRangeEnd - the maximum value of the range we want to convert
+  * @param {number} value - the value we want to convert
+  * $return {number}
+  */
+  var _convertRange = function (rangeStart, rangeEnd, newRangeStart, newRangeEnd, value) {
+    var scale = (newRangeEnd - newRangeStart) / (rangeEnd - rangeStart);
+    return (value * scale) + newRangeStart;
+  };
+
+  /** .
+  * @param {object} object - the player object
+  * @param {number} x - the x coordinate on tha canvas
+  * @param {number} y - the y coordinate on tha canvas
+  * @return {bool}
+  */
+  var _outOfbound = function (object, x, y) {
+    var newBottomY = y + object.height;
+    var newTopY = y;
+    var newRightX = x + object.width;
+    var newLeftX = x;
+    var topLimit = 48;
+    var bottomLimit = 548;
+    var rightLimit = Constants.CANVAS_WIDTH;
+    var leftLimit = 0;
+    return newBottomY > bottomLimit ||
+    newTopY < topLimit ||
+    newLeftX < leftLimit ||
+    newRightX > rightLimit;
+  };
+
+  return {
+    distanceTwoPoint: _distanceTwoPoint,
+    buildPoint: _buildPoint,
+    convertRange: _convertRange,
+    outOfbound: _outOfbound
+  };
+})();
+module.exports = Utils;
+
+},{"./constants":11}],13:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.0
  * http://jquery.com/

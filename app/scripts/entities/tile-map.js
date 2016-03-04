@@ -11,9 +11,9 @@ var Resources = require('../modules/resources');
   */
 function TileMap(x, y, type) {
   var types = {
-    'grass': 'images/water-block.png',
-    'stone': 'images/grass-block.png',
-    'water': 'images/stone-block.png'
+    'grass': 'images/grass-block.png',
+    'stone': 'images/stone-block.png',
+    'water': 'images/water-block.png'
   };
   Sprite.call(this, types[type], 0, 0, x, y, 101, 83);
   this.type = type;

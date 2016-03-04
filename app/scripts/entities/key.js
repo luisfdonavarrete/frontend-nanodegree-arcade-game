@@ -41,7 +41,7 @@ Key.prototype.update = function (dt) {
  * Render the key on the map or next to the player
  * @method render
  */
-Key.prototype.render = function () {
+Key.prototype.render = function (ctx) {
   /*TODO: rewrite this method, the player object does not anything to do here*/
     // if (!player.key) {
     //     ctx.drawImage(Resources.get(this.sprite), this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);

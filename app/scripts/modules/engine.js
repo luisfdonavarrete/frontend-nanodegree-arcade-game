@@ -30,29 +30,6 @@ var Engine = (function () {
   canvas.height = Constants.CANVAS_HEIGHT;
   document.body.appendChild(canvas);
 
-  /* This function is called by the render function and is called on each game
-  * tick. It's purpose is to then call the render functions you have defined
-  * on your enemy and player entities within app.js
-  */
-  function renderEntities() {
-    /* Loop through all of the objects within the allEnemies array and call
-    * the render function you have defined.
-    */
-    var renderAllEntities = function (entities) {
-      if (entities) {
-        for (var i = 0; i < entities.length; i++) {
-          if (!Array.isArray(entities[i]) && typeof entities[i].render !== 'undefined') {
-            entities[i].render(ctx);
-          }
-          else {
-            renderAllEntities(entities[i]);
-          }
-        }
-      }
-    };
-    renderAllEntities(entities);
-  }
-
   /* This function initially draws the "game level", it will then call
   * the renderEntities function. Remember, this function is called every
   * game tick (or loop of the game engine) because that's how games work -
@@ -60,61 +37,19 @@ var Engine = (function () {
   * they are just drawing the entire screen over and over.
   */
   function render() {
-    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
-    /* This array holds the relative URL to the image used
-    * for that particular row of the game level.
-    */
-    var rowImages = [
-      'images/water-block.png', // Top row is water
-      'images/stone-block.png', // Row 1 of 3 of stone
-      'images/stone-block.png', // Row 2 of 3 of stone
-      'images/stone-block.png', // Row 3 of 3 of stone
-      'images/grass-block.png', // Row 1 of 2 of grass
-      'images/grass-block.png' // Row 2 of 2 of grass
-    ],
-    numRows = 6,
-    numCols = 5,
-    row, col;
-    /* Loop through the number of rows and columns we've defined above
-    * and, using the rowImages array, draw the correct image for that
-    * portion of the "grid"
-    */
-    for (row = 0; row < numRows; row++) {
-      for (col = 0; col < numCols; col++) {
-        /* The drawImage function of the canvas' context element
-        * requires 3 parameters: the image to draw, the x coordinate
-        * to start drawing and the y coordinate to start drawing.
-        * We're using our Resources helpers to refer to our images
-        * so that we get the benefits of caching these images, since
-        * we're using them over and over.
-        */
-        //ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
-      }
-    }
-    renderEntities();
-  }
-
-  /* This is called by the update function  and loops through all of the
-  * objects within your allEnemies array as defined in app.js and calls
-  * their update() methods. It will then call the update function for your
-  * player object. These update methods should focus purely on updating
-  * the data/properties related to  the object. Do your drawing in your
-  * render methods.
-  */
-  function updateEntities(dt) {
-    var updateAllEntities = function (entities) {
+    var renderEntities = function (entities) {
       if (entities) {
-        for (var i = 0; i < entities.length; i++) {
-          if (!Array.isArray(entities[i]) && typeof entities[i].update !== 'undefined') {
-            entities[i].update(dt);
+        for (var i = 0, len = entities.length; i < len; i++) {
+          if (!Array.isArray(entities[i]) && typeof entities[i].render !== 'undefined') {
+            entities[i].render(ctx);
           }
           else {
-            updateAllEntities(entities[i]);
+            renderEntities(entities[i]);
           }
         }
       }
     };
-    updateAllEntities(entities);
+    renderEntities(entities);
   }
 
   /* This function is called by main (our game loop) and itself calls all
@@ -127,7 +62,19 @@ var Engine = (function () {
   * on the entities themselves within your app.js file).
   */
   function update(dt) {
-    updateEntities(dt);
+    var updateEntities = function (entities) {
+      if (entities) {
+        for (var i = 0, len = entities.length; i < len; i++) {
+          if (!Array.isArray(entities[i]) && typeof entities[i].update !== 'undefined') {
+            entities[i].update(dt);
+          }
+          else {
+            updateEntities(entities[i]);
+          }
+        }
+      }
+    };
+    updateEntities(entities);
     // checkCollisions();
   }
 

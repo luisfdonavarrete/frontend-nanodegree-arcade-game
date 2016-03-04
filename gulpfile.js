@@ -148,3 +148,7 @@ gulp.task('serve', ['jshint', 'imagemin', 'fonts', 'copy-game-data', 'build'], f
   gulp.watch(['app/scripts/**/*.js', cssSources, htmlSources], ['build']);
   gulp.watch(outputDir + '**/*.*').on('change', browserSync.reload);
 });
+
+gulp.task('default', ['clean'], function () {
+  gulp.start('serve');
+});
